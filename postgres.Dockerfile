@@ -1,11 +1,15 @@
-server {
-    listen 8080;
-    server_name _;
+FROM golang:1.25.4
 
-    root /usr/share/nginx/html;
-    index index.html;
+WORKDIR /app
 
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+
+RUN go build -o server .
+
+EXPOSE 8080
+
+CMD ["./server"]
