@@ -1,10 +1,11 @@
-# Use official PostgreSQL image
-FROM postgres:15
+server {
+    listen 8080;
+    server_name _;
 
-# Set environment variables for database user, password, name
-ENV POSTGRES_USER=eventuser
-ENV POSTGRES_PASSWORD=eventpass
-ENV POSTGRES_DB=eventplanner
+    root /usr/share/nginx/html;
+    index index.html;
 
-# Expose PostgreSQL port
-EXPOSE 5432
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
