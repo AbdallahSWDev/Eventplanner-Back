@@ -3,14 +3,24 @@
 # =========================
 FROM golang:1.25.4 AS builder
 
+ENV CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 \
+    GO111MODULE=on \
+    GOPROXY=https://proxy.golang.org,direct
+
 WORKDIR /app
 
+# Copy module files
 COPY go.mod go.sum ./
-RUN go mod download
+
+# IMPORTANT: do NOT pre-download modules
+# Let go build resolve everything in one step
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server
+# Single-step build with verbose output
+RUN go build -v -mod=mod -o server
 
 # =========================
 # Runtime stage
