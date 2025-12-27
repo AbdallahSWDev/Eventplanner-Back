@@ -4,33 +4,28 @@
 FROM golang:1.25.4 AS builder
 
 ENV CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64 \
     GO111MODULE=on \
-    GOPROXY=https://proxy.golang.org,direct
+    GOMAXPROCS=1
 
 WORKDIR /app
 
-# Copy module files
+# Copy only module files first
 COPY go.mod go.sum ./
+RUN go mod download
 
-# IMPORTANT: do NOT pre-download modules
-# Let go build resolve everything in one step
-
+# Copy source
 COPY . .
 
-# Single-step build with verbose output
-RUN go build -v -mod=mod -o server
+# Build with reduced memory usage
+RUN go build -trimpath -ldflags="-s -w" -o server
 
 # =========================
 # Runtime stage
 # =========================
-FROM registry.access.redhat.com/ubi9/ubi-micro:latest
+FROM registry.access.redhat.com/ubi9/ubi-micro
 
 WORKDIR /app
-
 COPY --from=builder /app/server .
 
 EXPOSE 8080
-
 CMD ["/app/server"]
