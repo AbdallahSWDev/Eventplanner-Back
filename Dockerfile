@@ -1,25 +1,21 @@
-# =========================
-# Build stage
-# =========================
-FROM registry.access.redhat.com/ubi9/go-toolset:1.22 AS builder
+# =============== Build stage ===============
+FROM golang:1.25 AS builder
 
-WORKDIR /app
+WORKDIR /src
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server ./...
 
-# =========================
-# Runtime stage
-# =========================
+# =============== Final stage ===============
 FROM registry.access.redhat.com/ubi9/ubi-micro:latest
 
 WORKDIR /app
 
-COPY --from=builder /app/server .
+COPY --from=builder /src/server .
 
 EXPOSE 8080
 
