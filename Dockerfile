@@ -1,7 +1,7 @@
 # =========================
 # Build stage
 # =========================
-FROM registry.access.redhat.com/ubi9/go-toolset:1.25 AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.25.4 AS builder
 
 WORKDIR /app
 
