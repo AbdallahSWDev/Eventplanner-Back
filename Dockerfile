@@ -1,7 +1,7 @@
 # =========================
 # Build stage
 # =========================
-FROM registry.access.redhat.com/ubi9/go-toolset:1.25.4 AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.22 AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server
 # =========================
 # Runtime stage
 # =========================
-FROM registry.access.redhat.com/ubi9/ubi-micro
+FROM registry.access.redhat.com/ubi9/ubi-micro:latest
 
 WORKDIR /app
 
