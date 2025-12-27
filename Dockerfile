@@ -1,7 +1,7 @@
 # =========================
 # Build stage
 # =========================
-FROM golang:1.25.4-alpine AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.25 AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server
 # =========================
 # Runtime stage
 # =========================
-FROM gcr.io/distroless/base-debian12
+FROM registry.access.redhat.com/ubi9/ubi-micro
 
 WORKDIR /app
 
@@ -23,4 +23,4 @@ COPY --from=builder /app/server .
 
 EXPOSE 8080
 
-CMD ["./server"]
+CMD ["/app/server"]
